@@ -136,6 +136,12 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
         }
     }
 
+    public void SetGuid(System.Guid _guid)
+    {
+        guid = _guid;
+        CreateGuid();
+    }
+
     void Awake()
     {
         CreateGuid();
