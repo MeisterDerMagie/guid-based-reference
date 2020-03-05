@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Bayat.Json.Utilities;
 using UnityEngine;
-
+using Wichtel.Extensions;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -104,7 +105,7 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
     {
         return PrefabUtility.IsPartOfPrefabAsset(this) || IsEditingInPrefabMode();
     }
-#endif
+    #endif
 
     // We cannot allow a GUID to be saved into a prefab, and we need to convert to byte[]
     public void OnBeforeSerialize()
@@ -162,6 +163,11 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
         {
             CreateGuid();
         }
+
+        #if UNITY_EDITOR
+        //Schiebe diese Komponente nach oben, damit sie immer die erste (nach dem Transform) ist.
+        this.MoveComponentAtIndex(1);
+        #endif
     }
 
     // Never return an invalid GUID
