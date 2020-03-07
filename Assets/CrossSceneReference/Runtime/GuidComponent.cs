@@ -37,25 +37,25 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
         // if our serialized data is invalid, then we are a new object and need a new GUID
         if (serializedGuid == null || serializedGuid.Length != 16)
         {
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             // if in editor, make sure we aren't a prefab of some kind
             if (IsAssetOnDisk())
             {
                 return;
             }
             Undo.RecordObject(this, "Added GUID");
-#endif
+            #endif
             guid = System.Guid.NewGuid();
             serializedGuid = guid.ToByteArray();
 
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             // If we are creating a new GUID for a prefab instance of a prefab, but we have somehow lost our prefab connection
             // force a save of the modified prefab instance properties
             if (PrefabUtility.IsPartOfNonAssetPrefabInstance(this))
             {
                 PrefabUtility.RecordPrefabInstancePropertyModifications(this);
             }
-#endif
+            #endif
         }
         else if (guid == System.Guid.Empty)
         {
@@ -76,7 +76,7 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
         }
     }
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
     private bool IsEditingInPrefabMode()
     {
         if (EditorUtility.IsPersistent(this))
@@ -110,7 +110,7 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
     // We cannot allow a GUID to be saved into a prefab, and we need to convert to byte[]
     public void OnBeforeSerialize()
     {
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         // This lets us detect if we are a prefab instance or a prefab asset.
         // A prefab asset cannot contain a GUID since it would then be duplicated when instanced.
         if (IsAssetOnDisk())
@@ -119,7 +119,7 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
             guid = System.Guid.Empty;
         }
         else
-#endif
+        #endif
         {
             if (guid != System.Guid.Empty)
             {
@@ -148,9 +148,14 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
         CreateGuid();
     }
 
+    public void Initialize()
+    {
+        CreateGuid();
+    }
+
     void OnValidate()
     {
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         // similar to on Serialize, but gets called on Copying a Component or Applying a Prefab
         // at a time that lets us detect what we are
         if (IsAssetOnDisk())
@@ -159,7 +164,7 @@ public class GuidComponent : MonoBehaviour, ISerializationCallbackReceiver
             guid = System.Guid.Empty;
         }
         else
-#endif
+        #endif
         {
             CreateGuid();
         }
